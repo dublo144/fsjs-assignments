@@ -88,7 +88,11 @@ class Book implements IBook {
   }
 }
 
-// This should work....
 class SmarterBook implements IBook {
-  constructor(title: string, author: string, published: Date, pages: number) {}
+  constructor(
+    public title: string,
+    public author: string,
+    public published: Date,
+    public pages: number
+  ) {}
 }
