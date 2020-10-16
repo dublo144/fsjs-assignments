@@ -1,0 +1,17 @@
+{
+  "name": "testing_with_mocha_chai_nock",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --reporter spec"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chai": "^4.2.0",
+    "fs-extra": "^9.0.1",
+    "mocha": "^8.1.3"
+  }
+}
