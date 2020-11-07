@@ -29,14 +29,9 @@ export default class UserFacade {
   static async addUser(user: IGameUser): Promise<boolean> {
     /*Info: Import bcryptjs and (npm install bcryptjs) and hash before you store */
     try {
-      const userExists: boolean = users.some(
-        (u) => u.userName === user.userName
-      );
-      if (userExists) throw new Error('User already exists');
-
       const hashedPw: string = await bcrypt.hash(user.password, 12);
 
-      users.push({
+      await userCollection.insertOne({
         ...user,
         password: hashedPw
       });
@@ -48,11 +43,11 @@ export default class UserFacade {
     }
   }
 
-  static deleteUser(userName: string): boolean {
+  static async deleteUser(userName: string): Promise<boolean> {
     try {
-      const userExists: boolean = users.some((u) => u.userName === userName);
-      if (!userExists) throw new Error('User does not exist');
-      users.filter((u) => u.userName !== userName);
+      await userCollection.deleteOne({
+        username: userName
+      });
       return true;
     } catch (error) {
       debug(error);
@@ -61,12 +56,11 @@ export default class UserFacade {
   }
 
   static async getAllUsers(proj?: object): Promise<Array<any>> {
-    const users = await userCollection.find({}, { projection: proj }).toArray();
-    return users;
+    return await userCollection.find({}, { projection: proj }).toArray();
   }
 
-  static getUser(userName: string): IGameUser {
-    const user = users.find((u) => u.userName === userName);
+  static async getUser(userName: string): Promise<IGameUser> {
+    const user = await userCollection.findOne({ userName });
     if (!user) throw new Error('User not found');
     return user;
   }
@@ -82,7 +76,6 @@ export default class UserFacade {
 
       return true;
     } catch (error) {
-      // Log correct error?
       throw new Error('Invalid credentials');
     }
   }

@@ -1,7 +1,7 @@
 import { MongoClient } from 'mongodb';
 const debug = require('debug')('db-setup');
 
-const connection = process.env.DB_URI || '';
+const connection = process.env.CONNECTION || '';
 let client = new MongoClient(connection, {
   useNewUrlParser: true,
   useUnifiedTopology: true
