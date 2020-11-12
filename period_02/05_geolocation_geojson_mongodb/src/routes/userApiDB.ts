@@ -40,7 +40,6 @@ router.get('/:userName', async function (req: any, res, next) {
   try {
     if (USE_AUTHENTICATION) {
       const role = req.role;
-      console.log(role);
       if (role != 'admin') {
         throw new ApiError('Not Authorized', 403);
       }
