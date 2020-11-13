@@ -30,7 +30,7 @@ describe('Verify /gameapi/getPostIfReached', () => {
     this.timeout(Number(process.env.MOCHA_TIMEOUT));
 
     process.env.PORT = TEST_PORT;
-    process.env.SKIP_AUTHENTICATION = '1';
+    process.env.SKIP_AUTHENTICATION = 'true';
     process.env.DB_NAME = 'semester_case_test';
 
     const client = await getConnectedClient();
