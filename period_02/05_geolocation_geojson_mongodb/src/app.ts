@@ -13,12 +13,14 @@ app.use(express.static(path.join(process.cwd(), 'public')));
 app.use(express.json());
 
 const userAPIRouter = require('./routes/userApiDB');
+const gameApiRouter = require('./routes/gameAPI');
 
 app.get('/api/dummy', (req, res) => {
   res.json({ msg: 'Hello' });
 });
 
 app.use('/api/users', userAPIRouter);
+app.use('/gameapi', gameApiRouter);
 
 app.use(function (err: any, req: any, res: any, next: Function) {
   if (err instanceof ApiError) {

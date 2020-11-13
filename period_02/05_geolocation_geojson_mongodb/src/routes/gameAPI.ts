@@ -1,7 +1,6 @@
 import express from 'express';
 import gameFacade from '../facades/gameFacade';
 const router = express.Router();
-import { ApiError } from '../errors/apiError';
 import { getConnectedClient } from '../config/setupDB';
 
 import UserFacade from '../facades/userFacadeWithDB';
@@ -30,16 +29,10 @@ router.get('/', async function (req, res, next) {
 
 router.post('/nearbyplayers', async function (req, res, next) {
   try {
-    const username = req.params.userName;
-    const password = req.params.password;
-    const lat = Number(req.params.lat);
-    const lon = Number(req.params.lon);
-    const distance = Number(req.params.distance);
-
+    const { userName, password, lat, lon, distance } = req.body;
     //Read the exercise and check what must be sent with the request. Grab this information from the request body, and
     //call the method (the skeleton is already there) nearbyPlayers(....) in the gameFacade and send back the result to the client
-
-    const response = await gameFacade.nearbyPlayers(username, password, lat, lon, distance);
+    const response = await gameFacade.nearbyPlayers(userName, password, Number(lat), Number(lon), Number(distance));
     return res.json(response);
   } catch (err) {
     next(err);

@@ -83,7 +83,7 @@ describe('########## Verify the Game Facade ##########', () => {
       );
     });
 
-    it.only('Should find Team2 and Team3', async () => {
+    it('Should find Team2 and Team3', async () => {
       const playersFound = await GameFacade.nearbyPlayers('t1', 'secret', 12.48, 55.77, DISTANCE_TO_SEARCH + 200);
       expect(playersFound.length).to.be.equal(2);
     });

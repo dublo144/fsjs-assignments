@@ -1,5 +1,5 @@
-import path from 'path';
-import { expect } from 'chai';
+import chai from 'chai';
+import spies from 'chai-spies';
 import { Server } from 'http';
 import fetch from 'node-fetch';
 import { MongoClient } from 'mongodb';
@@ -8,6 +8,11 @@ import { getConnectedClient } from '../src/config/setupDB';
 
 import { positionCreator, getLatitudeInside, getLatitudeOutside } from '../src/utils/geoUtils';
 import { USER_COLLECTION_NAME, POSITION_COLLECTION_NAME } from '../src/config/collectionNames';
+import GameFacade from '../src/facades/gameFacade';
+
+chai.use(spies);
+
+const expect = chai.expect;
 
 let server: Server;
 const TEST_PORT = '7777';
@@ -44,7 +49,7 @@ describe('Verify /gameapi/getPostIfReached', () => {
     const team2 = { name: 'Team2', userName: 't2', password: secretHashed, role: 'team' };
     const team3 = { name: 'Team3', userName: 't3', password: secretHashed, role: 'team' };
 
-    const status = await usersCollection.insertMany([team1, team2, team3]);
+    await usersCollection.insertMany([team1, team2, team3]);
 
     await positionsCollection.deleteMany({});
     await positionsCollection.createIndex({ lastUpdated: 1 }, { expireAfterSeconds: 30 });
@@ -52,11 +57,11 @@ describe('Verify /gameapi/getPostIfReached', () => {
     const positions = [
       positionCreator(12.48, 55.77, team1.userName, team1.name, true),
       //TODO --> Change latitude below, to a value INSIDE the radius given by DISTANCE_TO_SEARC, and the position of team1
-      positionCreator(12.48, 55.77, team2.userName, team2.name, true),
+      positionCreator(12.48, getLatitudeInside(55.77, DISTANCE_TO_SEARCH), team2.userName, team2.name, true),
       //TODO --> Change latitude below, to a value OUTSIDE the radius given by DISTANCE_TO_SEARC, and the position of team1
-      positionCreator(12.48, 55.77, team3.userName, team3.name, true)
+      positionCreator(12.48, getLatitudeOutside(55.77, DISTANCE_TO_SEARCH), team3.userName, team3.name, true)
     ];
-    const locations = await positionsCollection.insertMany(positions);
+    await positionsCollection.insertMany(positions);
   });
 
   after(async () => {});
@@ -71,22 +76,43 @@ describe('Verify /gameapi/getPostIfReached', () => {
       },
       body: JSON.stringify(newPosition)
     };
-    const result = await fetch(`${URL}/gameapi/nearbyplayers`, config).then((r) => r.json());
-    expect(result.length).to.be.equal(1);
-    expect(result[0].name).to.be.equal('Team2');
+    const result = await fetch(`${URL}/gameapi/nearbyplayers`, config);
+    const json = await result.json();
+    expect(json.length).to.be.equal(1);
+    expect(json[0].name).to.be.equal('Team2');
   });
 
-  xit('Should find team2 +team3, since both are inside range', async function () {
-    //TODO
+  it('Should return 403 when invalid credentials', async () => {
+    const newPosition = { userName: 'hulabula', password: 123, lat: 55.77, lon: 12.48, distance: DISTANCE_TO_SEARCH };
+
+    const config = {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(newPosition)
+    };
+
+    const result = await fetch(`${URL}/gameapi/nearbyplayers`, config);
+    const json = await result.json();
+    expect(json.code === 403);
   });
 
-  xit('Should NOT find team2, since not in range', async function () {
-    //TODO
-  });
+  it('Should call the NearbyPlayers-method with the correct username and PW', async function () {
+    const newPosition = { userName: 't1', password: 'secret', lat: 55.77, lon: 12.48, distance: DISTANCE_TO_SEARCH };
 
-  xit('Should NOT find team2, since since credentials are wrong', async function () {
-    //TODO
-  });
+    const config = {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(newPosition)
+    };
 
-  xit('Should .....', async () => {});
+    const spy = chai.spy.on(GameFacade, 'nearbyPlayers');
+    await fetch(`${URL}/gameapi/nearbyplayers`, config);
+    expect(spy).to.have.been.called().with('t1', 'secret');
+  });
 });

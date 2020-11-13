@@ -81,6 +81,7 @@ export default class GameFacade {
 
       //Add what we are searching for (the userName in a Position Document)
       const query = { name: userName };
+
       // Add what needs to be added here, remember the document might NOT exist yet
       const update = {
         $set: {
@@ -119,7 +120,7 @@ export default class GameFacade {
     GameFacade.isDbReady();
     try {
       const found = positionCollection.find({
-        //Figure out what to add here.Hint --> Take a look at the $near operator
+        // Figure out what to add here.Hint --> Take a look at the $near operator
         location: {
           $near: {
             $geometry: point,

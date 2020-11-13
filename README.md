@@ -51,9 +51,15 @@
 
 [Adding the Game related parts to your backend](https://github.com/dublo144/fsjs-assignments/tree/master/period_02/05_geolocation_geojson_mongodb)
 
+#### Deployed Version
+
+[geojson.madsbrandt.codes](https://geojson.madsbrandt.codes)
+
 #### General notes to my start code for Period 2
 
 **_dotEnv_** has been refactored to a dev dependency since it has no use in the production environment. In turn, that means that I can't import it anywhere using `require(dotEnv)`, and I have to preload the config file (.env). This can be done by requiring `-r dotenv/config` in the npm scripts.
 
 **_chai-as-promised_** has been added in order to support testing async code.
 Chai-as-promised allows me to `expect` that a function call will rejected, instead of catching the rejected promise and `expect` on that. Better use of the framework. Yay!
+
+**_chai-spies_** has been added in order to support spies on functions. It is used in [GameEndpointTest](https://github.com/dublo144/fsjs-assignments/blob/master/period_02/05_geolocation_geojson_mongodb/test/gameEndpointTest.ts) to verify that the correct function is called in the facade with the correct parameters, without actually asserting on the outcome. The outcome is tested by the unit-test for that function.
