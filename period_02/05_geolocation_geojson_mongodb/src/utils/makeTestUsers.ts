@@ -1,5 +1,3 @@
-import path from 'path';
-require('dotenv').config({ path: path.join(process.cwd(), '.env') });
 import * as mongo from 'mongodb';
 import bcrypt from 'bcryptjs';
 const debug = require('debug')('test-users');

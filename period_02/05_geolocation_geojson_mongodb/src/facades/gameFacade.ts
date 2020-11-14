@@ -1,5 +1,3 @@
-const path = require('path');
-require('dotenv').config({ path: path.join(process.cwd(), '.env') });
 import IPoint from '../interfaces/Point';
 import * as mongo from 'mongodb';
 import { ApiError } from '../errors/apiError';
@@ -80,7 +78,7 @@ export default class GameFacade {
         short time */
 
       //Add what we are searching for (the userName in a Position Document)
-      const query = { name: userName };
+      const query = { userName: userName };
 
       // Add what needs to be added here, remember the document might NOT exist yet
       const update = {

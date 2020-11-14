@@ -66,7 +66,7 @@ describe('Verify /gameapi/getPostIfReached', () => {
 
   after(async () => {});
 
-  xit('Should find team2, since inside range', async function () {
+  it('Should find team2, since inside range', async function () {
     const newPosition = { userName: 't1', password: 'secret', lat: 55.77, lon: 12.48, distance: DISTANCE_TO_SEARCH };
     const config = {
       method: 'POST',
@@ -79,7 +79,7 @@ describe('Verify /gameapi/getPostIfReached', () => {
     const result = await fetch(`${URL}/gameapi/nearbyplayers`, config);
     const json = await result.json();
     expect(json.length).to.be.equal(1);
-    expect(json[0].name).to.be.equal('Team2');
+    expect(json[0].userName).to.be.equal('t2');
   });
 
   it('Should return 403 when invalid credentials', async () => {
